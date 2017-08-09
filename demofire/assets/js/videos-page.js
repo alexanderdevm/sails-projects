@@ -1,3 +1,5 @@
+﻿/*global angular */
+
 angular.module('brushfire_videosPage', [])
     .config(function($sceDelegateProvider) {
         $sceDelegateProvider.resourceUrlWhitelist([
@@ -29,7 +31,7 @@ angular.module('brushfire_videosPage')
                 $scope.videos = _videos;
             }, 750);
 
-            $scope.submitNewVideo = function() {
+            $scope.submitNewVideo = function () {
                 if ($scope.busySubmittingVideo) {
                     return;
                 }
@@ -42,13 +44,13 @@ angular.module('brushfire_videosPage')
 
                 parser.href = _newVideo.src;
 
-                var youtubeID = parser.search.substring(parser.search.indexOf("=") + 1, parser.search.length);
+                var youtubeID = parser.search.substring(parser.search.indexOf('=') + 1, parser.search.length);
 
                 _newVideo.src = 'https://www.youtube.com/embed/' + youtubeID;
 
                 $scope.busySubmittingVideo = true;
 
-                $timeout(function() {
+                $timeout(function () {
                     $scope.videos.unshift(_newVideo);
 
                     $scope.busySubmittingVideo = false;
@@ -56,42 +58,6 @@ angular.module('brushfire_videosPage')
                     $scope.newVideoTitle = '';
                     $scope.newVideoSrc = '';
                 }, 750);
-            }
+            };
         }
     ]);
-
-
-
-// $(function whenDomIsReady() {
-//     $('.the-submit-video-form').submit(function(e) {
-//         e.preventDefault();
-//         var newVideo = {
-//             title: $('.the-submit-video-form input[name="title"]').val(),
-//             src: $('.the-submit-video-form input[name="src"]').val()
-//         };
-
-//         $('.the-submit-video-form input').val('');
-//         $('.the-submit-video-form button').text('Submitting...');
-//         $('.the-submit-video-form button').prop('disabled', true);
-
-//         var parser = document.createElement('a');
-
-//         parser.href = newVideo.src;
-
-//         var youtubeID = parser.search.substring(parser.search.indexOf("=") + 1,
-//             parser.search.length);
-
-//         newVideo.src = 'https://youtube.com/embed/' + youtubeID;
-
-//         setTimeout(function() {
-//             var newVideoHtml = '<li class="video">' +
-//                 '   <h2>' + newVideo.title + '<h2>' +
-//                 '   <iframe width="640" height="390" src="' + newVideo.src + '" frameborder="0" allowfullscreen></iframe>' +
-//                 '</li>';
-
-//             $('.the-list-of-videos').prepend(newVideoHtml);
-//             $('.the-submit-video-form button').text('Submit Video');
-//             $('.the-submit-video-form button').prop('disabled', false);
-//         }, 750)
-//     })
-// });
