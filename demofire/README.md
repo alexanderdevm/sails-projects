@@ -1,3 +1,3 @@
-# start-of-chap-4
+# Demofire
 
 a [Sails](http://sailsjs.org) application
