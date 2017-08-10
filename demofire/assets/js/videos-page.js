@@ -1,7 +1,9 @@
-﻿/*global angular */
+﻿/*jslint */
+/*global angular, document */
 
 angular.module('brushfire_videosPage', [])
-    .config(function($sceDelegateProvider) {
+    .config(function ($sceDelegateProvider) {
+        'use strict';
         $sceDelegateProvider.resourceUrlWhitelist([
             'self',
             '*://www.youtube.com/**'
@@ -9,10 +11,14 @@ angular.module('brushfire_videosPage', [])
     });
 
 angular.module('brushfire_videosPage')
-    .service('$scope', '$timeout', function() { /* ... */ })
+    .service('$scope', '$timeout', function () {
+        'use strict';
+        return undefined;
+    })
     .controller('PageCtrl', [
         '$scope', '$timeout',
-        function($scope, $timeout) {
+        function ($scope, $timeout) {
+            'use strict';
             $scope.videosLoading = true;
 
             $timeout(function afterRetrievingVideos() {
