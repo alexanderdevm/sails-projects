@@ -1,0 +1,15 @@
+{
+    "devel": true,
+    "white": true,
+    "properties": false,
+    "predef": [
+        "angular",
+        "io",
+        "$",
+        "document",
+        "module",
+        "$apply",
+        "Video",
+        "require"
+    ]
+}

@@ -1,6 +1,4 @@
-/*global angular, io */
-/*eslint indent: ["off"]*/
-
+/*properties $apply*/
 angular.module('brushfire_videosPage', [])
     .config(['$sceDelegateProvider', function ($sceDelegateProvider) {
         'use strict';
@@ -12,7 +10,7 @@ angular.module('brushfire_videosPage', [])
 
 angular.module('brushfire_videosPage').controller('PageCtrl', [
     '$scope', '$http',
-    function ($scope, $http) {
+    function ($scope, ignore) { //ignore:$http
         'user strict';
         /////////////////////////////////////////////////////////////////////////////
         // Immediately start fetching list of videos from the server.
@@ -37,7 +35,8 @@ angular.module('brushfire_videosPage').controller('PageCtrl', [
             $scope.$apply();
 
             io.socket.on('video', function whenAVideoIsCreateUpdatedOrDesroyed(
-                event) {
+                event
+            ) {
                 console.log('received something', event
                     .data);
                 $scope.videos.unshift({
@@ -90,7 +89,7 @@ angular.module('brushfire_videosPage').controller('PageCtrl', [
             // (thanks to ng-model, it's already in the $scope object)
             var _newVideo = {
                 title: $scope.newVideoTitle,
-                src: $scope.newVideoSrc,
+                src: $scope.newVideoSrc
             };
 
             // create placeholder anchor element
@@ -131,7 +130,7 @@ angular.module('brushfire_videosPage').controller('PageCtrl', [
             io.socket.post('/video', {
                 title: _newVideo.title,
                 src: _newVideo.src
-            }, function whenServerResponds(data, JWR) {
+            }, function whenServerResponds(ignore, JWR) { //ignore:data
                 $scope.videosLoading = false;
                 if (JWR.statusCode >= 400) {
                     console.log('something bad happened');
