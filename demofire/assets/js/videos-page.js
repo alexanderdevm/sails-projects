@@ -1,4 +1,3 @@
-/*properties $apply*/
 angular.module('brushfire_videosPage', [])
     .config(['$sceDelegateProvider', function ($sceDelegateProvider) {
         'use strict';
