@@ -1,4 +1,3 @@
-/*global module */
 /**
  * VideoController
  *
@@ -7,5 +6,6 @@
  */
 
 module.exports = {
-
+	
 };
+

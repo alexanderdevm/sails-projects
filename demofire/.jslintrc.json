@@ -2,6 +2,7 @@
     "devel": true,
     "white": true,
     "properties": false,
+    "this": true,
     "predef": [
         "angular",
         "io",
