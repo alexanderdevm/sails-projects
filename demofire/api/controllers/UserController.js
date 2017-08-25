@@ -59,9 +59,9 @@ module.exports = {
                         return res.serverError(err);
                     },
                     success: function (result) {
-                        var gravatarUrl = '';
+                        var gravatarURL = '';
                         try {
-                            gravatarUrl = Gravatar.getImageUrl({
+                            gravatarURL = Gravatar.getImageUrl({
                                 emailAddress: req.param(
                                     'email')
                             }).execSync();
@@ -73,7 +73,7 @@ module.exports = {
                             email: req.param('email'),
                             username: req.param('username'),
                             password: result,
-                            gravatarUrl: gravatarUrl
+                            gravatarURL: gravatarURL
                         };
                         //return res.json(options);
                         User.create(options).exec(function (err, createdUser) {
@@ -98,6 +98,144 @@ module.exports = {
                     }
                 });
             }
+        });
+    },
+    profile: function (req, res) {
+        'user strict';
+        User.findOne(req.param('id')).exec(function foundUser(err, user) {
+            if (err) { return res.negotiate(err); }
+            if (!user) { return res.notFound(); }
+
+            var options = {
+                email: user.email,
+                username: user.username,
+                gravatarURL: user.gravatarURL,
+                deleted: user.deleted,
+                admin: user.admin,
+                banned: user.banned,
+                id: user.id
+            };
+            return res.json(options);
+        });
+    },
+    delete: function (req, res) {
+        'user strict';
+        if (!req.param('id')) {
+            return res.badRequest('id is a required parameter.');
+        }
+
+        User.destroy({ id: req.param('id') }).exec(function (err, userDestroyed) {
+            if (err) { return res.negotiate(err); }
+            if (userDestroyed.length === 0) { return res.notFound(); }
+            return res.ok();
+        });
+    },
+    removeProfile: function (req, res) {
+        'user strict';
+        if (!req.param('id')) {
+            return res.badRequest('id is a required parameter');
+        }
+
+        User.update({ id: req.param('id') }, { deleted: true }).exec(function (err, removedUser) {
+            if (err) { return res.negotiate(err); }
+            if (removedUser.length === 0) { return res.notFound(); }
+            return res.ok();
+        });
+    },
+    restoreProfile: function (req, res) {
+        'user strict';
+        User.findOne({ email: req.param('email') }, function foundUser(err, user) {
+            if (err) { return res.negotiate(err); }
+            if (!user) { return res.notFound(); }
+            Passwords.checkPassword({
+                passwordAttempt: req.param('password'),
+                encryptedPassword: user.encryptedPassword
+            }).exec({
+                error: function (err) {
+                    return res.negotiate(err);
+                },
+                incorrect: function () {
+                    return res.notFound();
+                },
+                success: function () {
+                    User.update({ id: user.id }, { deleted: false }).exec(
+                        function (err, updatedUser) {
+                            return res.json(updatedUser);
+                        });
+                }
+            });
+        });
+    },
+    restoreGravatarURL: function (req, res) {
+        'use strict';
+        try {
+            var restoredGravatarURL = Gravatar.getImageUrl({
+                emailAddress: req.param('email')
+            }).execSync();
+
+            return res.json(restoredGravatarURL);
+        } catch (err) {
+            return res.serverError(err);
+        }
+    },
+    updateProfile: function (req, res) {
+        'use strict';
+        User.update({ id: req.param('id') }, { gravatarURL: req.param('gravatarURL') }, function (err,
+            updatedUser) {
+            if (err) { return res.negotiate(err); }
+            return res.json(updatedUser);
+        });
+    },
+    changePassword: function (req, res) {
+        'use strict';
+        if (_.isUndefined(req.param('password'))) {
+            return res.badRequest('A password is required!');
+        }
+
+        if (req.param('password').length < 6) {
+            return res.badRequest('Password must be at least 6 characters!');
+        }
+
+        Passwords.encryptPassword({ password: req.param('password') }).exec({
+            error: function (err) {
+                return res.serverError(err);
+            },
+            success: function (result) {
+                User.update({ id: req.param('id') }, { encryptedPassword: result }).exec(
+                    function (err, updatedUser) {
+                        if (err) { return res.negotiate(err); }
+                        return res.json(updatedUser);
+                    }
+                );
+            }
+        });
+    },
+    adminUsers: function (req, res) {
+        'use strict';
+        User.find().exec(function (err, users) {
+            if (err) { return res.negotiate(); }
+            return res.json(users);
+        });
+    },
+    updateAdmin: function (req, res) {
+        'use strict';
+        User.update(req.param('id'), { admin: req.param('admin') }).exec(function (err, update) {
+            if (err) { return res.negotiate(err); }
+            res.ok();
+        });
+    },
+    updateBanned: function (req, res) {
+        'use strict';
+        User.update(req.param('id'), { banned: req.param('banned') }).exec(function (err, update) {
+            if (err) { return res.negotiate(err); }
+            res.ok();
+        });
+    },
+    updateDeleted: function (req, res) {
+        'use strict';
+        User.update(req.param('id'), { deleted: req.param('deleted') }).exec(function (err, update) {
+            if (err) { return res.negotiate(err); }
+            res.ok();
         });
     }
 };

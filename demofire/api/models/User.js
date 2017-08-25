@@ -22,7 +22,7 @@ module.exports = {
         encryptedPassword: {
             type: 'string'
         },
-        gravatarUrl: {
+        gravatarURL: {
             type: 'string'
         },
         deleted: {

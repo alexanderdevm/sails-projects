@@ -95,6 +95,7 @@ module.exports.bootstrap = function (cb) {
                     options.deleted = false;
                     options.admin = false;
                     options.banned = false;
+
                     User.create(options).exec(function (err, createdUser) {
                         if (err) {
                             return cb(err);
