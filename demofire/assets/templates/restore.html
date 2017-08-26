@@ -3,14 +3,16 @@
   <h5>Oops!</h5>
   <p>Looks like an error occurred.</p>
   <code>
-  {{restoreForm.errorMsg}}
+    {{restoreForm.errorMsg}}
   </code>
 </div>
+
 <!-- Loading state -->
 <div ng-show="restoreForm.loading">
   <span class="overlord-loading-spinner fa fa-spinner"></span>
   <span>Loading user data...</span>
 </div>
+
 <!-- RESTORE FORM -->
 <form ng-submit="restoreProfile()" id="sign-up-form" class="form-signup" name="restore">
   <h2 class="form-signin-heading">Restore a Profile</h2>
@@ -28,9 +30,11 @@
     </div>
   </div>
   <br/>
+  
   <button class="btn btn-primary btn-lg btn-block" type="submit">
   <span ng-show="!restoreForm.loading">Restore Account</span>
   <span class="overlord-loading-spinner fa fa-spinner" ng-show="restoreForm.loading" ></span>
   <span ng-show="restoreForm.loading">Preparing your new account...</span>
   </button>
+
 </form>

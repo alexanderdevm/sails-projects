@@ -1,99 +1,111 @@
-angular.module('brushfire').controller('profilePageController', ['$location', '$routeParams', '$scope',
-    '$http',
-    function ($location, $routeParams, $scope, $http) {
+angular.module('brushfire').controller('profilePageController', ['$location', '$routeParams', '$scope', '$http', function($location, $routeParams, $scope, $http){
 
-        // Just a hack so we can type `SCOPE` in the Chrome inspector.
-        SCOPE = $scope;
+  // Just a hack so we can type `SCOPE` in the Chrome inspector.
+  SCOPE=$scope;
 
-        /////////////////////////////////////////////////////////////////////////////////
-        // When HTML is rendered... (i.e. when the page loads)
-        /////////////////////////////////////////////////////////////////////////////////
+  $scope.me = window.SAILS_LOCALS.me;
 
-        // Set up initial objects
-        // (kind of like our schema for the page)
-        $scope.userProfile = {
-            properties: {},
-            errorMsg: '',
-            saving: false,
-            loading: false,
-            noProfile: false
-        };
+  /////////////////////////////////////////////////////////////////////////////////
+  // When HTML is rendered... (i.e. when the page loads)
+  /////////////////////////////////////////////////////////////////////////////////
 
-        $scope.userProfile.loading = true;
+  // Set up initial objects
+  // (kind of like our schema for the page)
+  $scope.userProfile = {
+    properties: {},
+    errorMsg: '',
+    saving: false,
+    loading: false,
+    noProfile: false
+  };
 
-        // Build up route
-        var theRoute = '/user/profile/' + $routeParams.id;
+  $scope.userProfile.loading = true;
 
-        // Submit GET request to /user/profile/:id
-        $http.get(theRoute)
-            .then(function onSuccess(sailsResponse) {
+  // // Build up route
+  // var theRoute = '/user/profile/' +  $routeParams.id;
 
-                // If deleted profile remove interface and show message.
-                if (sailsResponse.data.deleted === true) {
-                    $scope.userProfile.errorMsg = 'No profile found.';
-                    return $scope.userProfile.noProfile = true;
-                }
-                // window.location = '#/profile/' + sailsResponse.data.id;
-                $scope.userProfile.properties.email = sailsResponse.data.email;
-                $scope.userProfile.properties.username = sailsResponse.data.username;
-                $scope.userProfile.properties.admin = sailsResponse.data.admin;
-                $scope.userProfile.properties.banned = sailsResponse.data.banned;
-                $scope.userProfile.properties.gravatarURL = sailsResponse.data.gravatarURL;
-                $scope.userProfile.properties.id = sailsResponse.data.id;
+  // // Submit GET request to /user/profile/:id
+  // $http.get(theRoute)
+  // .then(function onSuccess(sailsResponse){
+  //   // console.log('sailsResponse.data.deleted: ', sailsResponse.data.deleted);
+  //   // console.log('sailsResponse: ', sailsResponse);
 
-                $scope.userProfile.loading = false;
-            })
-            .catch(function onError(sailsResponse) {
+  //   // If deleted profile remove interface and show message.
+  //   if (sailsResponse.data.deleted === true) {
+  //     $scope.userProfile.errorMsg = 'No profile found.';
+  //     return $scope.userProfile.noProfile = true;
+  //   }
+  //   // console.log(sailsResponse.data.id);
+  //   // window.location = '#/profile/' + sailsResponse.data.id;
+  //   // console.log('The response is: ', sailsResponse);
+  //   $scope.userProfile.properties.email = sailsResponse.data.email;
+  //   $scope.userProfile.properties.username = sailsResponse.data.username;
+  //   $scope.userProfile.properties.admin = sailsResponse.data.admin;
+  //   $scope.userProfile.properties.banned = sailsResponse.data.banned;
+  //   $scope.userProfile.properties.gravatarURL = sailsResponse.data.gravatarURL;
+  //   $scope.userProfile.properties.id = sailsResponse.data.id;
 
-                // If no profile found remove interface and show error message.
-                if (sailsResponse.status === 404) {
-                    $scope.userProfile.noProfile = true;
-                    $scope.userProfile.errorMsg = 'No profile found.';
-                    return;
-                }
+  //   $scope.userProfile.loading = false;
+  // })
+  // .catch(function onError(sailsResponse){
+  //   // console.log(sailsResponse);
 
-                // Handle all other errors
-                $scope.userProfile.errorMsg = 'An unexpected error occurred: ' + (sailsResponse.data ||
-                    sailsResponse.status);
+  //   // If no profile found remove interface and show error message.    
+  //   if(sailsResponse.status === 404) {
+  //     $scope.userProfile.noProfile = true;
+  //     $scope.userProfile.errorMsg = 'No profile found.';
+  //     return;
+  //   }
 
-            })
-            .finally(function eitherWay() {
-                $scope.userProfile.loading = false;
-            });
+  //   // Handle all other errors
+  //   $scope.userProfile.errorMsg = 'An unexpected error occurred: '+(sailsResponse.data||sailsResponse.status);
 
-        $scope.removeProfile = function () {
+  // })
+  // .finally(function eitherWay(){
+  //   $scope.userProfile.loading = false;
+  // });
 
-            var theRoute = '/user/removeProfile/' + $scope.userProfile.properties.id;
-            $http.put(theRoute, {
-                    deleted: true
-                })
-                .then(function onSuccess(sailsResponse) {
+  $scope.removeProfile = function() {
 
-                    window.location = '#/signup';
+    // console.log('the change userprofile is: ', $scope.userProfile);
 
-                    $scope.userProfile.loading = false;
-                })
-                .catch(function onError(sailsResponse) {
-                    $scope.userProfile.errorMsg = 'An unexpected error occurred: ' + (
-                        sailsResponse.data || sailsResponse.status);
+    // var theRoute = '/user/removeProfile/' + $scope.userProfile.properties.id;
+    var theRoute = '/user/removeProfile/' + $scope.me.id;
+    $http.put(theRoute, {
+        deleted: true
+      })
+      .then(function onSuccess(sailsResponse) {
 
-                })
-                .finally(function eitherWay() {
-                    $scope.loading = false;
-                });
-        };
+        // console.log('sailsResponse: ', sailsResponse);
+          // $scope.userProfile.properties.gravatarURL = sailsResponse.data.gravatarURL;
+          window.location = '/signup';
+          // 
+          // toastr.success('Password Updated!');
 
-        $scope.deleteProfile = function () {
+        $scope.userProfile.loading = false;
+      })
+      .catch(function onError(sailsResponse) {
+        // console.log('sailsresponse: ', sailsResponse)
+        // Otherwise, display generic error if the error is unrecognized.
+        $scope.userProfile.errorMsg = 'An unexpected error occurred: ' + (sailsResponse.data || sailsResponse.status);
 
-            var theRoute = 'user/delete/' + $routeParams.id;
+      })
+      .finally(function eitherWay() {
+        $scope.loading = false;
+      });
+  };
 
-            $http.delete(theRoute)
-                .then(function onSuccess(deletedProfile) {
-                    window.location = '#/signup';
-                })
-                .catch(function onError(err) {
-                    $scope.userProfile.errorMsg = 'An unexpected error occurred: ' + err;
-                });
-        };
-    }
-]);
+  $scope.deleteProfile = function() {
+
+    var theRoute = 'user/delete/' + $routeParams.id;
+
+    $http.delete(theRoute)
+    .then(function onSuccess(deletedProfile){
+      window.location = '#/signup';
+    })
+    .catch(function onError(err){
+      $scope.userProfile.errorMsg = 'An unexpected error occurred: ' + err;
+    });
+  };
+
+}]);
