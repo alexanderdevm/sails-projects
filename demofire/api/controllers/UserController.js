@@ -4,13 +4,13 @@
  * @description :: Server-side logic for managing users
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-/*global _, User, splitUsername, gravatarURL,  */
+/*global _, User, splitUsername, gravatarURL, sails, ignored */
+
 var Emailaddresses = require('machinepack-emailaddresses');
 var Passwords = require('machinepack-passwords');
 var Gravatar = require('machinepack-gravatar');
 
 module.exports = {
-
   signup: function (req, res) {
     'use strict';
     if (_.isUndefined(req.param('email'))) {
@@ -101,6 +101,7 @@ module.exports = {
                 return res.negotiate(err);
               }
 
+              req.session.userId = null;
               return res.json(createdUser);
             });
           }
@@ -157,6 +158,7 @@ module.exports = {
         return res.notFound();
       }
 
+      req.session.userId = null;
       return res.ok();
     });
   },
@@ -180,7 +182,6 @@ module.exports = {
         incorrect: function () {
           return res.notFound();
         },
-
         success: function () {
 
           User.update({
@@ -188,6 +189,7 @@ module.exports = {
           }, {
             deleted: false
           }).exec(function (err, updatedUser) {
+            req.session.userId = null;
             return res.json(updatedUser);
           });
         }
@@ -332,10 +334,21 @@ module.exports = {
                 "in violation of terms of services. Please contact Admin'"
               );
             }
+            req.session.userId = createdUser.id;
             return res.ok();
           }
         });
 
       });
+  },
+  logout: function (req, res) {
+    'use strict';
+    if (!req.session.userId) { return res.redirect('/'); }
+    User.findOne(req.session.userId, function foundUser(err, user) {
+      if (err) { return res.negotiate(err); }
+      if (!user) { sails.log.vebose('Session refers to a user who no longer exists.'); }
+      req.session.userId = null;
+      return res.redirect('/');
+    });
   }
 };
