@@ -74,7 +74,7 @@ module.exports = {
             }
 
             options.email = req.param('email');
-            options.username = splitUsername;
+            options.username = req.param('username');
             options.encryptedPassword = result;
             options.deleted = false;
             options.admin = false;
@@ -189,6 +189,7 @@ module.exports = {
           }, {
             deleted: false
           }).exec(function (err, updatedUser) {
+            if (err) { /**/ }
             req.session.userId = null;
             return res.json(updatedUser);
           });
@@ -260,6 +261,7 @@ module.exports = {
 
   adminUsers: function (req, res) {
     'use strict';
+    if (req) { /**/ }
     User.find().exec(function (err, users) {
 
       if (err) { return res.negotiate(err); }
@@ -274,7 +276,7 @@ module.exports = {
     User.update(req.param('id'), {
       admin: req.param('admin')
     }).exec(function (err, update) {
-
+      if (update) { /**/ }
       if (err) { return res.negotiate(err); }
 
       return res.ok();
@@ -286,6 +288,7 @@ module.exports = {
     User.update(req.param('id'), {
       banned: req.param('banned')
     }).exec(function (err, update) {
+      if (update) { /**/ }
       if (err) { return res.negotiate(err); }
       return res.ok();
     });
@@ -296,6 +299,7 @@ module.exports = {
     User.update(req.param('id'), {
       deleted: req.param('deleted')
     }).exec(function (err, update) {
+      if (update) { /**/ }
       if (err) { return res.negotiate(err); }
       return res.ok();
     });

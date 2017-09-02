@@ -2,7 +2,7 @@
 angular.module('brushfire').controller('navPageController', ['$location', '$scope', '$http', 'toastr',
   function ($location, $scope, $http, toastr) {
     'use strict';
-
+    if ($location) { /**/ }
     //Set-up loading state
     $scope.loginForm = {};
 
